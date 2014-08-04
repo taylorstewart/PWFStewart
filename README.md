@@ -5,7 +5,7 @@ This repository contains data files, analysis scripts, and a draft manuscript fo
 
 **These data are as of yet unpublished and should not be used by anyone other than the authors.**
 
-# Data files
+# Data files (not in the repo)
 * `data/PWFLengths.xlsx` -- Excel file containing measured lengths of PWF from the last 25 years.
 * `data/PWF 2013.xlsx` -- Excel file containing the biological data specific to this project.
 
@@ -17,6 +17,7 @@ This repository contains data files, analysis scripts, and a draft manuscript fo
 * `ALK_Comparisons.R` -- Compare age-length-keys for otolith ages between females and males.
 * `Growth.R` -- 
 * `Age_Distributions.R` -- Applied an overall age-length-key to all measured lengths in 2013 to estimate an age distribution.
+* `Sex_Ratio.R` -- Compared sex-ratio across lengths and ages.
 
 # Other Files
 * `zzzHelpers.R` -- Helper files used in the above scripts.

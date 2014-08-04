@@ -9,13 +9,11 @@
 
 ## ===========================================================
 ## Load Packages -- used here and in other scripts
+##   other packages loaded as needed in the individual scripts
 ## ===========================================================
 library(XLConnect) # reading data
 library(dplyr)     # manipulating data
-library(nnet)      # for multinom() in ALK comparison
-library(nlstools)  # in VonB analysis
 library(FSA)       # lots of stuff
-library(NCStats)   # compSlopes() in W-L
 
 ## ===========================================================
 ## Set the random seed for reproducibility (i.e., randomization
@@ -82,28 +80,6 @@ pwf <- mutate(pwf,sex=factor(sex),
               lcat=lencat(tl,w=10))
 pwf
 
-## -----------------------------------------------------------
-## Create a new sex variable (sex2) where the unknown sex (and
-##   those that are immature, not those that we could not tell)
-##   fish are partitioned equally and randomly between to be
-##   male and female.  This variable may be used in the Growth 
-##   analyses to anchor the left-side of the models.
-## -----------------------------------------------------------
-# which rows have unknown sex individuals
-tmp <- which(pwf$sex=="Unknown" & pwf$mat=="Immature")
-( nUnk <- length(tmp) )
-# randomly order the values
-tmp <- sample(tmp,nUnk)
-# create new variable & replace first half of random indivs
-#   with Female and second half with Male
-pwf$sex2 <- pwf$sex
-pwf$sex2[tmp[1:round(nUnk/2,0)]] <- "Female"
-pwf$sex2[tmp[(round(nUnk/2,0)+1):nUnk]] <- "Male"
-# check -- should be none in "Unknown" column, should be roughly
-#   50% of "Unknown" row in Female and Male, and still some
-#   fish in N/A
-xtabs(~sex+sex2,data=pwf)
-
 
 ## ===========================================================
 ## Create Data.Frame for Weight-Length and Sex Ratio Analysis
@@ -113,7 +89,7 @@ xtabs(~sex+sex2,data=pwf)
 ##   and weight
 ## -----------------------------------------------------------
 pwfWL <- pwf %>%
-  select(-c(scale1:oto,sex2)) %>%
+  select(-(scale1:oto)) %>%
   arrange(sex,tl,wt)
 pwfWL
 
@@ -128,7 +104,7 @@ pwfWL
 ## -----------------------------------------------------------
 pwfAge <- pwf %>% 
   filter(!(is.na(scale1) & is.na(scale2) & is.na(oto1) & is.na(oto2))) %>%
-  select(-c(wt,mat,sex2)) %>%
+  select(-c(wt,mat)) %>%
   arrange(sex,oto,tl)
 pwfAge
 
@@ -160,7 +136,7 @@ rm(wb,pwfLF,tmp,nUnk)
 ##   returned if this script is sourced.
 ##
 ## pwf: Original fish sample data.frame.  Used in length
-##        frequency analysis.
+##        frequency and sex ratio analysis.
 ## pwfAge: Used in the age comparisons analysis.
 ## pwfGrow: Used in the growth analysis.
 ## pwfWL: Used in the weight-length analysis.

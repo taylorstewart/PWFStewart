@@ -13,6 +13,12 @@ source("Data_Init.R")
 head(pwfGrow,n=10)
 
 ## ===========================================================
+## Load Additional Packages
+## ===========================================================
+library(nnet)      # for multinom()
+
+
+## ===========================================================
 ## Isolate the male and female fish (remove the unknowns)
 ## ===========================================================
 pwfALK <- filter(pwfGrow,sex!="Unknown")

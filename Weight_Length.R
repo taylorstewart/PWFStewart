@@ -13,6 +13,12 @@ source("Data_Init.R")
 pwfWL
 
 ## ===========================================================
+## Load Additional Packages
+## ===========================================================
+library(NCStats)   # compSlopes()
+
+
+## ===========================================================
 ## Delete the N/A fish in the sex variable (thus, all "unknown"
 ##   fish are also immature fish), append logwt and logtl
 ##   variables, and remove three outliers ...
