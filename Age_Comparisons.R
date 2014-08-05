@@ -168,3 +168,20 @@ par(mar=c(3.5,3.5,0.5,0.5),mgp=c(1.8,0.4,0),tcl=-0.2,las=1,xaxs="i",yaxs="i")
 plot(abSO,xlim=c(0,9.2),ylim=c(0,9.2),col.CI="black",col.CIsig="black",col.agree="black",nYpos=0.025)
 
 dev.off()
+
+
+
+## ===========================================================
+## Info for Publication quality table
+## ===========================================================
+tmp <- summary(abS)
+tmpS <- c(apS$n,tmp$p,apS$CV,apS$APE,apS$absdiff/sum(apS$absdiff)*100,NA,NA,NA,NA)
+tmp <- summary(abO)
+tmpO <- c(apO$n,tmp$p,apO$CV,apO$APE,apO$absdiff/sum(apO$absdiff)*100,NA,NA,NA)
+tmp <- summary(abSO)
+apSO <- agePrecision(oto~scale,data=pwfSO)
+tmpSO <- c(apSO$n,tmp$p,NA,NA,apSO$absdiff/sum(apSO$absdiff)*100)
+tmp <- rbind(tmpS,tmpO,tmpSO)
+colnames(tmp) <- c("n","McN","E-H","Bow","CV","APE","0","1","2","3","4","5","6")
+round(tmp,4)
+sum(tmp["tmpSO",c("3","4","5","6")])

@@ -254,7 +254,7 @@ round(pLenMAL,1)
 ## ===========================================================
 # Base plot
 plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(2,9),ylim=c(55,150),yaxt="n")
-curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=2,to=9,lwd=lwid+1,lty=2,col="black",add=TRUE)
+curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=2,to=9,lwd=3,lty=2,col="black",add=TRUE)
 polygon(c(2:9,rev(2:9)),c(pLenFEM[,"2.5%"],rev(pLenFEM[,"97.5%"])),col=rgb(0,0,0,0.3),border=NA)
 polygon(c(2:7,rev(2:7)),c(pLenMAL[1:6,"2.5%"],rev(pLenMAL[1:6,"97.5%"])),col=rgb(1,0,0,0.3),border=NA)
 curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=2,to=7,lwd=3,col=rgb(1,0,0,0.6),add=TRUE)

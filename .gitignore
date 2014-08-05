@@ -11,4 +11,5 @@ data/
 # Old files that don't need to be version controlled
 zzzOld/
 
-
+# temportary files related to the manuscript
+manuscript/.tmp
