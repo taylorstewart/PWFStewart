@@ -26,6 +26,7 @@ pwfScales <- filter(pwfAge,!is.na(scale1) & !is.na(scale2))
 ## Sample size for comparing scale ages
 ## -----------------------------------------------------------
 ( numScales <- nrow(pwfScales) )
+xtabs(~sex+lcat,data=pwfScales)
 
 ## -----------------------------------------------------------
 ## Number (and percent) of fish where a scale age could not
@@ -66,6 +67,7 @@ pwfOtos <- filter(pwfAge,!is.na(oto1) & !is.na(oto2))
 ## Sample size for comparing otolith ages
 ## -----------------------------------------------------------
 ( numOtos <- nrow(pwfOtos) )
+xtabs(~sex+lcat,data=pwfOtos)
 
 ## -----------------------------------------------------------
 ## Number (and percent) of fish where an otolith age could not
@@ -102,6 +104,8 @@ sum(apO$absdiff[1:2])/sum(apO$absdiff)*100
 ## -----------------------------------------------------------
 pwfSO <- filter(pwfAge,!is.na(scale) & !is.na(oto))
 nrow(pwfSO)
+xtabs(~sex+lcat,data=pwfSO)
+
 
 ## -----------------------------------------------------------
 ## Bias Between Structures
@@ -109,7 +113,7 @@ nrow(pwfSO)
 ## !!   relative to otolith ages starting, possibly, as early
 ## !!   as otolith age-2.
 ## -----------------------------------------------------------
-abSO <- ageBias(oto~scale,data=pwfSO,ref.lab="Otolith Age",nref.lab="Scale Age")
+abSO <- ageBias(oto~scale,data=pwfSO,ref.lab="Consensus Otolith Age",nref.lab="Consensus Scale Age")
 summary(abSO,what=c("n","table","symmetry"))
 plot(abSO)
 
@@ -135,6 +139,32 @@ scales75["1"]/sum(scales75)*100
 ## !!   age-5 (though not significant until age-7).
 ## ===========================================================
 pwfSO <- mutate(pwfSO,scaleAdj=scale+1)
-abSO2 <- ageBias(oto~scaleAdj,data=pwfSO,ref.lab="Otolith Age",nref.lab="Adj Scale Age")
+abSO2 <- ageBias(oto~scaleAdj,data=pwfSO,ref.lab="tolith Age",nref.lab="Adj Scale Age")
 summary(abSO2,what=c("n","table","symmetry"))
 plot(abSO2)
+
+
+
+## ===========================================================
+## Publication quality graphic -- scale/otolith age-bias plot
+## ===========================================================
+## -----------------------------------------------------------
+## Put the result into a PDF file
+## -----------------------------------------------------------
+figw <- 5 # inches
+figh <- figw
+ptsz <- 12
+pdf("Figs/FigSO.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+
+## -----------------------------------------------------------
+## Set some constants for plotting
+## -----------------------------------------------------------
+# plotting parameters
+par(mar=c(3.5,3.5,0.5,0.5),mgp=c(1.8,0.4,0),tcl=-0.2,las=1,xaxs="i",yaxs="i")
+
+## -----------------------------------------------------------
+## Make the figure
+## -----------------------------------------------------------
+plot(abSO,xlim=c(0,9.2),ylim=c(0,9.2),col.CI="black",col.CIsig="black",col.agree="black",nYpos=0.025)
+
+dev.off()

@@ -43,6 +43,9 @@ pwfWL
 ## !!   shows no differences.  Thus, conclude that the three
 ## !!   W-L regressions are statistically similar.
 ## ===========================================================
+## -----------------------------------------------------------
+## Typical DVR ... see full vs. simple model comparison below
+## -----------------------------------------------------------
 lm1 <- lm(logwt~logtl*sex,data=pwfWL)
 anova(lm1)
 compSlopes(lm1)
@@ -60,3 +63,7 @@ summary(lm2)
 exp(cf["(Intercept)"])
 rSquared(lm2)
 
+## -----------------------------------------------------------
+## full vs. simple model comparison
+## -----------------------------------------------------------
+anova(lm2,lm1)
