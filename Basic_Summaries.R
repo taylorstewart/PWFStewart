@@ -7,7 +7,7 @@
 ##############################################################
 ##############################################################
 ## ===========================================================
-## Source Data_Init Script ... get pwfLens and wf data.frames
+## Source Data_Init Script ... get pwfLens and pwf data.frames
 ## ===========================================================
 source("Data_Init.R")
 pwf
@@ -34,12 +34,21 @@ Summarize(~sex,data=pwf)
 Summarize(~sex,data=subset(pwf,sex!="N/A"))
 
 ## ===========================================================
-## 
+## Comparison of lengths between male and females
 ## ===========================================================
+## -----------------------------------------------------------
+## Isolate males and females
+## -----------------------------------------------------------
 tmpF <- filter(pwf,sex=="Female")
 tmpM <- filter(pwf,sex=="Male")
+## -----------------------------------------------------------
+## Kolmogorov-Smirnov test of the distribution
+## -----------------------------------------------------------
 ks.test(tmpF$tl,tmpM$tl)
 plot(ecdf(tmpF$tl))
 plot(ecdf(tmpM$tl), add = TRUE, lty = "dashed")
+## -----------------------------------------------------------
+## Wilcoxon test of the medians
+## -----------------------------------------------------------
 wilcox.test(tmpF$tl,tmpM$tl)
 Summarize(tl~sex,data=pwf)

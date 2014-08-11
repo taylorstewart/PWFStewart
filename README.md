@@ -1,7 +1,7 @@
 PWFStewart
 ==========
 
-This repository contains data files, analysis scripts, and a draft manuscript for AS YET UNNAMED (Life History Aspects of Lake Superior Pygmy Whitefish, Including Precision and Bias in Age Assessments) by Taylor R. Stewart, Derek H. Ogle, and Mark R. Vinson.
+This repository contains data files, analysis scripts, and a draft manuscript for *Life History Aspects of Lake Superior Pygmy Whitefish, Including Precision and Bias in Age Assessments* by Taylor R. Stewart, Derek H. Ogle, and Mark R. Vinson.
 
 **These data are as of yet unpublished and should not be used by anyone other than the authors.**
 

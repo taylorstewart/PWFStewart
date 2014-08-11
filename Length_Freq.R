@@ -37,7 +37,7 @@ pwfLens
 figw <- 24/2.54
 figh <- figw*0.8
 ptsz <- 18
-pdf("Figs/Fig1.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+pdf("Figs/Fig_LF.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting

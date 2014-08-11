@@ -8,6 +8,9 @@ data/
 .Rdata
 .Rproj.user
 
+# Preview of README.md
+README.html
+
 # Old files that don't need to be version controlled
 zzzOld/
 
