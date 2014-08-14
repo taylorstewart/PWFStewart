@@ -1,6 +1,6 @@
 ##############################################################
 ##############################################################
-##  PWF (Taylor Stewart et al.) manuscript
+##  PWF (Taylor Stewart et al.) manuscript work
 ##
 ##  ANALYSIS SETUP SCRIPT
 ##
