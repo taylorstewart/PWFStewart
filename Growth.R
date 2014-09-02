@@ -351,3 +351,65 @@ lines(AI53Mt~age,data=predLens,lwd=2,lty=1,col="gray70")
 lines(LFP53M~age,data=predLens,lwd=2,lty=1,col="gray60")
 lines(predM~age,data=predLens,lwd=3,lty=1)
 legend("topleft",legend="Males",bty="n",cex=1.25)
+
+
+## ===========================================================
+## Table of predicted lengths-at-age with results from 
+##   other life history studies included
+## ===========================================================
+predLens <- cbind(age=1:9,
+                  predF=c(NA,pLenFEM[,"Estimate"]),
+                  lciF=c(NA,pLenFEM[,"2.5%"]),
+                  uciF=c(NA,pLenFEM[,"97.5%"]),
+                  FLF=c(116,140,154,168,NA,NA,NA,NA,NA),
+                  BKLF=c(57,70,75,NA,NA,NA,NA,NA,NA),
+                  SBF=c(76,112,127,138,155,NA,NA,NA,NA),
+                  LMF=c(62,92,108,NA,NA,NA,NA,NA,NA),
+                  BLF=c(60,119,152,NA,NA,NA,NA,NA,NA),
+                  CLF=c(53,91,112,121,136,152,NA,NA,NA),
+                  TLF=c(58,89,105,114,124,134,NA,NA,NA),
+                  MLF=c(NA,87,141,191,228,232,250,NA,262),
+                  MLLF=c(NA,95,148,178,185,NA,NA,NA,NA),
+                  
+                  predM=c(NA,pLenMAL[1:6,"Estimate"],NA,NA),
+                  lciM=c(NA,pLenMAL[1:6,"2.5%"],NA,NA),
+                  uciM=c(NA,pLenMAL[1:6,"97.5%"],NA,NA),
+                  FLM=c(117,128,140,NA,NA,NA,NA,NA,NA),
+                  BKLM=c(57,64,71,NA,NA,NA,NA,NA,NA),
+                  SBM=c(77,109,118,133,NA,NA,NA,NA,NA),
+                  LMM=c(64,88,101,108,NA,NA,NA,NA,NA),
+                  BLM=c(59,113,130,NA,NA,NA,NA,NA,NA),
+                  CLM=c(64,96,107,112,118,NA,NA,NA,NA),
+                  TLM=c(58,80,100,NA,NA,NA,NA,NA,NA),
+                  MLM=c(NA,87,133,188,174,215,NA,NA,NA),
+                  MLLM=c(NA,95,146,167,NA,NA,NA,NA,NA)
+)
+rownames(predLens) <- NULL
+print(predLens,digits=1,na.print="-")
+
+predLens <- data.frame(predLens)
+par(mfrow=c(1,2),mar=c(3,3,0.5,0.5),mgp=c(1.7,0.5,0),tcl=-0.2)
+plot(-1,-1,xlim=c(1,9),ylim=c(50,275),xlab="Age",ylab="Total Length")
+lines(FLF~age,data=predLens,lwd=2,lty=1,col="gray90")
+lines(BKLF~age,data=predLens,lwd=2,lty=1,col="gray80")
+lines(SBF~age,data=predLens,lwd=2,lty=1,col="gray70")
+lines(LMF~age,data=predLens,lwd=2,lty=1,col="gray60")
+lines(BLF~age,data=predLens,lwd=2,lty=1,col="gray50")
+lines(CLF~age,data=predLens,lwd=2,lty=1,col="gray40")
+lines(TLF~age,data=predLens,lwd=2,lty=1,col="gray30")
+lines(MLF~age,data=predLens,lwd=2,lty=1,col="gray20")
+lines(MLLF~age,data=predLens,lwd=2,lty=1,col="gray10")
+lines(predF~age,data=predLens,lwd=3,lty=1)
+legend("topleft",legend="Females",bty="n",cex=1.25)
+plot(-1,-1,xlim=c(1,9),ylim=c(50,275),xlab="Age",ylab="Total Length")
+lines(FLM~age,data=predLens,lwd=2,lty=1,col="gray90")
+lines(BKLM~age,data=predLens,lwd=2,lty=1,col="gray80")
+lines(SBM~age,data=predLens,lwd=2,lty=1,col="gray70")
+lines(LMM~age,data=predLens,lwd=2,lty=1,col="gray60")
+lines(BLM~age,data=predLens,lwd=2,lty=1,col="gray50")
+lines(CLM~age,data=predLens,lwd=2,lty=1,col="gray40")
+lines(TLM~age,data=predLens,lwd=2,lty=1,col="gray30")
+lines(MLM~age,data=predLens,lwd=2,lty=1,col="gray20")
+lines(MLLM~age,data=predLens,lwd=2,lty=1,col="gray10")
+lines(predM~age,data=predLens,lwd=3,lty=1)
+legend("topleft",legend="Males",bty="n",cex=1.25)
