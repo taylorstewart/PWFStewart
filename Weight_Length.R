@@ -28,8 +28,8 @@ library(NCStats)   # compSlopes()
 ## ===========================================================
 pwfWL <- pwfWL %>% 
   filter(sex!="N/A") %>%
-  mutate(logtl=log(tl),
-         logwt=log(wt)) %>%
+  mutate(logtl=log10(tl),
+         logwt=log10(wt)) %>%
   filter(!(fish %in% c(184,214,216)))
 pwfWL
 
