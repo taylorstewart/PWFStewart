@@ -1,5 +1,5 @@
 pwfHist <- function(df,yr,breaks,xlim,ylim,show.xaxis,show.yaxis,len.ticks,show.yr=TRUE,...) {
-  par(mgp=c(0,0.4,0),tcl=-0.2,las=1,xaxs="i",yaxs="i")
+  par(mgp=c(0,0.4,0),tcl=-0.25,las=1,xaxs="i",yaxs="i")
   lm <- bm <- 1;   lrm <- btm <- 0.4
   if (show.xaxis & show.yaxis) { par(mar=c(bm,lm,btm,lrm))
   } else if (show.xaxis & !show.yaxis) { par(mar=c(bm,lrm,btm,lrm))
