@@ -10,7 +10,7 @@
 ## Source Data_Init Script ... get pwfLens and pwf data.frames
 ## ===========================================================
 source("Data_Init.R")
-pwfLens
+str(pwfLens)
 
 ## ===========================================================
 ## Source helper functions ... get pwfHist()
@@ -18,6 +18,16 @@ pwfLens
 source("zzzHelpers.R")
 
 
+## ===========================================================
+## Find characteristics of the Coaster samples in 2008.
+## ===========================================================
+tmp <- pwfLens %>%
+  filter(vessel=="Coaster") %>%
+  filter(year==2008)
+xtabs(~OP_DATE,data=tmp)
+Summarize(~beg_depth,data=tmp)
+Summarize(~avg_depth,data=tmp)
+Summarize(~end_depth,data=tmp)
 ## ===========================================================
 ## Examine how the distribution of haphazardly sampled fish in
 ##   the pwf data.frame compare to entire sample in pwfLens in
@@ -52,21 +62,29 @@ abline(h=0,lwd=2,lty=3)
 
 
 ## ===========================================================
-## Get list of years available, restrict to last eight years,
-##   order by year and length
+## A test of what the density in a histogram is, or, how do
+##   you get the percentage of a bar
+## What was learned here was used in zzzHelpers.R
 ## ===========================================================
-( yrs <- as.numeric(levels(pwfLens$fyear)) )
+h <- hist(~tl,data=pwfLens,breaks=seq(20,224,2))
+h$counts/sum(h$counts)*100-(2*h$density*100)
+
+h$counts <- h$counts/sum(h$counts)*100
+plot(h)
+
 
 ## ===========================================================
-## Make a matrix of LF histograms for only the last eight
-##   years.  This will be in the manuscript.  See below for
-##   histograms from every available year.
+## Make a matrix of LF histograms for 2006-2013 (last eight
+##   years but not including 2014).  This will be in the
+##   manuscript.  See below for histograms of 1991-2013.
 ## ===========================================================
-yrs2 <- yrs[(length(yrs)-7):length(yrs)]
+yrs2 <- 2006:2013
 pwfLens2 <- pwfLens %>%
   filter(year %in% yrs2) %>%
+  mutate(fyear=droplevels(fyear)) %>%
   arrange(year,tl)
-pwfLens2
+str(pwfLens2)
+
 
 ## -----------------------------------------------------------
 ## Put the result into a PDF file
@@ -81,10 +99,11 @@ pdf("Figs/Fig_LF.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefi
 ## -----------------------------------------------------------
 clr <- "gray50"
 brks <- seq(20,224,2)
-xlmt <- c(30,150)
-len.ticks <- seq(50,150,25)
+xlmt <- c(30,160)
+len.ticks <- c(30,seq(50,175,25))
+freq.ticks <- seq(0,10,2)
 prob <- TRUE
-ylmt <- c(0,0.06)
+ylmt <- range(freq.ticks)
 # number of rows and cols of actual plots
 nrow <- 4
 ncol <- 2
@@ -111,10 +130,10 @@ plot.new(); text(0.5,0.6,"Total Length (mm)",cex=1.25)
 ## Put on individual histograms
 ## -----------------------------------------------------------
 for (i in 1:length(yrs2)) {
-  pwfHist(pwfLens2,yrs2[i],brks,xlmt,ylmt,col=clr,
+  pwfHist(pwfLens2,yrs2[i],brks,xlmt,ylmt,clr,
           ifelse((i/nrow) %in% (1:ncol),TRUE,FALSE),
           ifelse((i/nrow) <= 1,TRUE,FALSE),
-          len.ticks
+          len.ticks,freq.ticks
   )
   axis(1,seq(20,225,5),labels=NA,tcl=-0.1)
   abline(v=75,col="black",lwd=2,lty=2)
@@ -144,13 +163,15 @@ dev.off()
 ## -----------------------------------------------------------
 ## Restrict to 1990-2013 when 1-mm TLs were taken.
 ## -----------------------------------------------------------
-yrs <- 1990:2013
+yrs <- 2000:2014
 
+clr <- "gray50"
 brks <- seq(20,224,2)
 xlmt <- c(30,175)
-len.ticks <- seq(50,150,25)
+len.ticks <- c(30,seq(50,175,25))
+freq.ticks <- seq(0,10,2)
 prob <- TRUE
-ylmt <- c(0,0.06)
+ylmt <- range(freq.ticks)
 
 pdf("Figs/Fig_LF_suppl.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 pgs <- floor(length(yrs)/8)
@@ -177,10 +198,10 @@ for (j in 1:pgs) {
   ## -----------------------------------------------------------
   yrs2 <- yrs[((j-1)*8+1):(j*8)]
   for (i in 1:length(yrs2)) {
-    pwfHist(pwfLens,yrs2[i],brks,xlmt,ylmt,col=clr,
+    pwfHist(pwfLens,yrs2[i],brks,xlmt,ylmt,clr,
             ifelse((i/nrow) %in% (1:ncol),TRUE,FALSE),
             ifelse((i/nrow) <= 1,TRUE,FALSE),
-            len.ticks
+            len.ticks,freq.ticks
     )
     axis(1,seq(20,225,5),labels=NA,tcl=-0.1)
     abline(v=75,col="black",lwd=2,lty=2)
