@@ -14,6 +14,7 @@
 library(XLConnect) # reading data
 library(dplyr)     # manipulating data
 library(FSA)       # lots of stuff
+library(lubridate) # to handle dates
 
 ## ===========================================================
 ## Set the random seed for reproducibility (i.e., randomization
@@ -27,27 +28,53 @@ set.seed(84621684)
 ## -----------------------------------------------------------
 ## Load the LF data
 ## -----------------------------------------------------------
-wb <- loadWorkbook("data/PWFLengths.xlsx")
-pwfLF <- readWorksheet(wb,sheet="AllYears")
+#wb <- loadWorkbook("data/PWFLengths.xlsx")  # this was original
+wb <- loadWorkbook("data/1967_to_present_pygmy_whitefish_lengths_LSBS.xlsx")
+pwfLF <- readWorksheet(wb,sheet="Export Worksheet")
 
 ## -----------------------------------------------------------
 ## Expend the LF data ... the LF data are recorded as the
 ##   frequency of fish for each length by year.  These data
 ##   must be expanded to individual lengths year.
 ## -----------------------------------------------------------
-pwfLens <- with(pwfLF,data.frame(tl=rep(LENGTH,EXP_N),
-                                 year=rep(YEAR,EXP_N)))
+# if EXP_N row is blank then put N value in it
+pwfLF$EXP_N[pwfLF$EXP_N==""] <- pwfLF$N[pwfLF$EXP_N==""]
+# repeat row index as many times as EXP_N
+reprows <- rep(1:nrow(pwfLF),pwfLF$EXP_N)
+# make a data.frame with those row indices (will repeat as
+#  necessary), drop the "N" and "EXP_N" columns, create some
+#  date related variabvles, recode some categorical things
+#  that are coded as numbers, convert depths from character
+#  to numeric (because of blanks??), and change LENGTH to tl
+#  so we don't have to change some of the other code.
+pwfLens <- pwfLF[reprows,] %>%
+  select(-N,-EXP_N) %>%
+  mutate(op_date=dmy(OP_DATE)) %>%
+  mutate(year=year(op_date),mon=month(op_date,label=TRUE),day=day(op_date)) %>%
+  mutate(year=ifelse(year>2020,year-100,year)) %>%
+  mutate(fyear=factor(year)) %>%
+#  mutate(mon=factor(mon,levels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))) %>%
+  mutate(vessel=recodeF(as.character(VESSEL),c("1","11","25","95"),c("Siscowet","Grayling","Kiyi","Coaster"))) %>%
+  mutate(tr_design=recodeF(as.character(TR_DESIGN),c("25","4","26"),c("Large","Large","Small"))) %>%
+  mutate(target=recodeF(as.character(TARGET),c("2","130","122","113","104"),c("nearshore","inshore","deepwater","bathymetric","YOY LKT"))) %>%
+  mutate(beg_depth=as.numeric(BEG_DEPTH)) %>%
+  mutate(end_depth=as.numeric(END_DEPTH)) %>%
+  mutate(avg_depth=(beg_depth+end_depth)/2) %>%
+  mutate(tl=LENGTH)
 
-## -----------------------------------------------------------
-## Convert to a dplyr tbl_df type
-## -----------------------------------------------------------
-pwfLens <- tbl_df(pwfLens)
+## ===========================================================
+## Reduce length frequency sample to only those fish caught
+##   with the Kiyi and only in May, June, or July ... to 
+##   be consistent with Taylor's samples.  However, kept 
+##   Coaster samples (which are only from 2008) to show the
+##   age-1+ fish in 2008.
+## ===========================================================
+pwfLens <- pwfLens %>%
+  filter(vessel %in% c("Kiyi","Coaster")) %>%
+  filter(mon %in% c("May","Jun","Jul"))
+pwfLens <- droplevels(pwfLens)
 
-## -----------------------------------------------------------
-## Factor the year variable
-## -----------------------------------------------------------
-pwfLens <- mutate(pwfLens,fyear = factor(year))
-pwfLens
+tbl_df(pwfLens)
 
 ## ===========================================================
 ## Load and Initial Manipulations of the Fish Sample Data
