@@ -1,12 +1,12 @@
 PWFStewart
 ==========
 
-This repository contains data files, analysis scripts, and a draft manuscript for *Life History Aspects of Lake Superior Pygmy Whitefish, Including Precision and Bias in Age Assessments* by Taylor R. Stewart, Derek H. Ogle, and Mark R. Vinson.
+This repository contains data files, analysis scripts, and a draft manuscript for *Age, growth, and size of Lake Superior Pygmy Whitefish (Prosopium coulterii) in 2013* by Taylor R. Stewart, Derek H. Ogle, Owen T. Gorman, and Mark R. Vinson.
 
 **These data are as of yet unpublished and should not be used by anyone other than the authors.**
 
 # Data files (not in the repo)
-* `data/PWFLengths.xlsx` -- Excel file containing measured lengths of PWF from the last 25 years.
+* `data/1967_to_present_pygmy_whitefish_lengths_LSBS.xlsx` -- Excel file containing measured lengths of PWF from the last 27 years.
 * `data/PWF 2013.xlsx` -- Excel file containing the biological data specific to this project.
 
 # Scripts
@@ -25,3 +25,4 @@ This repository contains data files, analysis scripts, and a draft manuscript fo
 * `PWFStewart.Rproj` -- RStudio project file.
 * `.gitignore` -- things to ignore when committing or pushing to GitHub.
 * `README.md` -- This readme file
+* `literature_resources` -- Folder of PDFs of relevant literature.
