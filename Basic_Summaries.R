@@ -7,10 +7,10 @@
 ##############################################################
 ##############################################################
 ## ===========================================================
-## Source Data_Init Script ... get pwfLens and pwf data.frames
+## Source Data_Init Script ... get pwfLens and pwfWL data.frames
 ## ===========================================================
 source("Data_Init.R")
-pwf
+pwfWL
 pwfLens
 
 ## ===========================================================
@@ -21,17 +21,17 @@ Summarize(~tl,data=subset(pwfLens,year==2013))
 ## ===========================================================
 ## Lengths and Weights in subsample of PWF
 ## ===========================================================
-Summarize(~tl,data=pwf)
-Summarize(~wt,data=pwf)
+Summarize(~tl,data=pwfWL)
+Summarize(~wt,data=pwfWL)
 
 ## ===========================================================
 ## Sex ratio of subsampled fish
 ## ===========================================================
-Summarize(~sex,data=pwf)
+Summarize(~sex,data=pwfWL)
 ## -----------------------------------------------------------
 ## With N/A fish removed
 ## -----------------------------------------------------------
-Summarize(~sex,data=subset(pwf,sex!="N/A"))
+Summarize(~sex,data=Subset(pwfWL,sex!="N/A"))
 
 ## ===========================================================
 ## Comparison of lengths between male and females
@@ -39,16 +39,17 @@ Summarize(~sex,data=subset(pwf,sex!="N/A"))
 ## -----------------------------------------------------------
 ## Isolate males and females
 ## -----------------------------------------------------------
-tmpF <- filter(pwf,sex=="Female")
-tmpM <- filter(pwf,sex=="Male")
+tmpF <- filter(pwfWL,sex=="Female")
+tmpM <- filter(pwfWL,sex=="Male")
 ## -----------------------------------------------------------
 ## Kolmogorov-Smirnov test of the distribution
 ## -----------------------------------------------------------
 ks.test(tmpF$tl,tmpM$tl)
-plot(ecdf(tmpF$tl))
-plot(ecdf(tmpM$tl), add = TRUE, lty = "dashed")
+plot(ecdf(tmpF$tl),pch=".",verticals=TRUE,lwd=2,main="",xlab="Total Length (mm)")
+plot(ecdf(tmpM$tl),add=TRUE,pch=".",verticals=TRUE,lwd=2,col="red")
+legend("topleft",c("Female","Male"),lwd=2,col=c("black","red"),bty="n")
 ## -----------------------------------------------------------
 ## Wilcoxon test of the medians
 ## -----------------------------------------------------------
 wilcox.test(tmpF$tl,tmpM$tl)
-Summarize(tl~sex,data=pwf)
+Summarize(tl~sex,data=pwfWL)

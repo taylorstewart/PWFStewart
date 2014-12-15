@@ -21,17 +21,15 @@ source("zzzHelpers.R")
 ## ===========================================================
 ## Find characteristics of the Coaster samples in 2008.
 ## ===========================================================
-tmp <- pwfLens %>%
-  filter(vessel=="Coaster") %>%
-  filter(year==2008)
+tmp <- filter(pwfLens,vessel=="Coaster",year==2008)
 xtabs(~OP_DATE,data=tmp)
 Summarize(~beg_depth,data=tmp)
 Summarize(~avg_depth,data=tmp)
 Summarize(~end_depth,data=tmp)
+
 ## ===========================================================
 ## Examine how the distribution of haphazardly sampled fish in
-##   the pwf data.frame compare to entire sample in pwfLens in
-##   2013.
+##   pwfWL compare to entire sample in 2013 in pwfLens.
 ##
 ## !! The subsample slighly over-represented for the smallest 
 ## !!   fish (<75 mm), under-represented for the 90-105 mm
@@ -46,11 +44,11 @@ brks <- seq(50,155,5)
 pwfLens13 <- pwfLens %>% 
   filter(year==2013) %>%
   mutate(lcat5=lencat(tl,breaks=brks,as.fact=TRUE,drop.levels=FALSE))
-## add the same length category variable to pwf
-pwf <- mutate(pwf,lcat5=lencat(tl,breaks=brks,as.fact=TRUE,drop.levels=FALSE))
+## add the same length category variable to pwfWL
+pwfWL %<>% mutate(lcat5=lencat(tl,breaks=brks,as.fact=TRUE,drop.levels=FALSE))
 ## tabulate each group, convert to a percentage
 tmp <- prop.table(cbind(sample=xtabs(~lcat5,data=pwfLens13),
-                        subsample=xtabs(~lcat5,data=pwf)),
+                        subsample=xtabs(~lcat5,data=pwfWL)),
                   margin=2)*100
 ## find diff
 tmp <- cbind(tmp,diff=tmp[,"subsample"]-tmp[,"sample"])
@@ -79,11 +77,11 @@ plot(h)
 ##   manuscript.  See below for histograms of 1991-2013.
 ## ===========================================================
 yrs2 <- 2006:2013
-pwfLens2 <- pwfLens %>%
+pwfLens06_13 <- pwfLens %>%
   filter(year %in% yrs2) %>%
   mutate(fyear=droplevels(fyear)) %>%
   arrange(year,tl)
-str(pwfLens2)
+str(pwfLens06_13)
 
 
 ## -----------------------------------------------------------
@@ -92,7 +90,7 @@ str(pwfLens2)
 figw <- 24/2.54
 figh <- figw*0.8
 ptsz <- 18
-pdf("Figs/Fig_LF.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+pdf("Figs/Figure3.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
@@ -130,7 +128,7 @@ plot.new(); text(0.5,0.6,"Total Length (mm)",cex=1.25)
 ## Put on individual histograms
 ## -----------------------------------------------------------
 for (i in 1:length(yrs2)) {
-  pwfHist(pwfLens2,yrs2[i],brks,xlmt,ylmt,clr,
+  pwfHist(pwfLens06_13,yrs2[i],brks,xlmt,ylmt,clr,
           ifelse((i/nrow) %in% (1:ncol),TRUE,FALSE),
           ifelse((i/nrow) <= 1,TRUE,FALSE),
           len.ticks,freq.ticks
@@ -173,7 +171,7 @@ freq.ticks <- seq(0,10,2)
 prob <- TRUE
 ylmt <- range(freq.ticks)
 
-pdf("Figs/Fig_LF_suppl.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+pdf("Figs/Figure3_suppl.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 pgs <- floor(length(yrs)/8)
 if(length(yrs)/8-pgs!=0) pgs <- pgs+1
 
