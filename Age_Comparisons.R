@@ -7,12 +7,9 @@
 ##############################################################
 ##############################################################
 ## ===========================================================
-## Source Data_Init Script ... get data.frames below
+## Source Data_Init Script ... get pwfAgeS, pwfAgeO, pwfAgeSO
 ## ===========================================================
 source("Data_Init.R")
-pwfAgeS
-pwfAgeO
-pwfAgeSO
 
 
 
@@ -21,9 +18,11 @@ pwfAgeSO
 ## ===========================================================
 ## -----------------------------------------------------------
 ## How many fish were deemed to have unuseable scales?
+## How were unuseable scales related to length
 ## Remove those fish from further analysis.
 ## -----------------------------------------------------------
 Summarize(~useS,data=pwfAgeS)
+xtabs(~useS+lcat,data=pwfAgeS)
 pwfAgeS %<>% filter(useS=="YES")
 
 ## -----------------------------------------------------------
@@ -62,9 +61,12 @@ cumsum(apS$absdiff)/sum(apS$absdiff)*100
 ## ===========================================================
 ## -----------------------------------------------------------
 ## How many fish were deemed to have unuseable otos?
+## How were unuseable otos related to length
 ## Remove those fish from further analysis.
 ## -----------------------------------------------------------
 Summarize(~useO,data=pwfAgeO)
+tmp <- xtabs(~lcat+useO,data=pwfAgeO)
+round(prop.table(tmp,margin=1)*100,1)
 pwfAgeO %<>% filter(useO=="YES")
 
 ## -----------------------------------------------------------

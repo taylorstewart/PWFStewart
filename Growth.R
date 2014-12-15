@@ -43,6 +43,13 @@ legend("topleft",legend=c("Female","Male","Unknown"),
 
 
 ## ===========================================================
+## Cross-tabs of length category and age, separeately for each
+##   sex (i.e., an age-length key if converted to percentages)
+## ===========================================================
+xtabs(~lcat+ageO+sex,data=Subset(pwfGrow,sex %in% c("Female","Male")))
+
+
+## ===========================================================
 ## Handle small (<75-mm) unknown sexed fish by assigning an
 ##   age of 1 (in a new age variable, ageOX) and randomly
 ##   allocating them to be male or female.  This should help
