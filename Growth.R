@@ -34,27 +34,34 @@ sep <- 0.08/2
 ## ===========================================================
 ## Preliminary exploratory plot
 ## ===========================================================
-plot(tl~I(oto-sep),data=subset(pwfGrow,sex=="Female"),pch=19,col=colF,
+plot(tl~I(ageO-sep),data=subset(pwfGrow,sex=="Female"),pch=19,col=colF,
      xlab=xlbl,ylab=ylbl,ylim=c(50,150),xlim=c(1,9))
-points(tl~I(oto+sep),data=subset(pwfGrow,sex=="Male"),pch=19,col=colM)
-points(tl~oto,data=subset(pwfGrow,sex=="Unknown"),pch=19,col=colU)
+points(tl~I(ageO+sep),data=subset(pwfGrow,sex=="Male"),pch=19,col=colM)
+points(tl~ageO,data=subset(pwfGrow,sex=="Unknown"),pch=19,col=colU)
 legend("topleft",legend=c("Female","Male","Unknown"),
        pch=16,col=c("black","red","blue"),bty="n")
 
 
 ## ===========================================================
-## Handle small (<75-mm) fish by assigning an age of 2 (in a
-##   new age variable, otoX) and randomly allocating them to
-##   be male or female.  This should help anchor the left
-##   side of the growth trajectory.
+## Cross-tabs of length category and age, separeately for each
+##   sex (i.e., an age-length key if converted to percentages)
+## ===========================================================
+xtabs(~lcat+ageO+sex,data=Subset(pwfGrow,sex %in% c("Female","Male")))
+
+
+## ===========================================================
+## Handle small (<75-mm) unknown sexed fish by assigning an
+##   age of 1 (in a new age variable, ageOX) and randomly
+##   allocating them to be male or female.  This should help
+##   anchor the left side of the growth trajectory.
 ## ===========================================================
 ## -----------------------------------------------------------
-## Create a new age variable, otoX, that contains all of the
+## Create a new age variable, ageOX, that contains all of the
 ##   old otolith ages except that the unknown fish are made
-##   to be age-2
+##   to be age-1
 ## -----------------------------------------------------------
-pwfGrow <- mutate(pwfGrow,otoX=oto)
-pwfGrow$otoX[pwfGrow$sex=="Unknown"] <- 2
+pwfGrow %<>% mutate(ageOX=ageO)
+pwfGrow$ageOX[pwfGrow$sex=="Unknown"] <- 1
 
 ## -----------------------------------------------------------
 ## Create a new sex variable (sex2) where the unknown sex
@@ -78,11 +85,11 @@ xtabs(~sex+sex2,data=pwfGrow)
 ## -----------------------------------------------------------
 ## Recreate the preliminary plot with the "new" variables
 ## -----------------------------------------------------------
-plot(tl~I(otoX-sep),data=subset(pwfGrow,sex=="Female"),pch=19,col=colF,
+plot(tl~I(ageOX-sep),data=subset(pwfGrow,sex=="Female"),pch=19,col=colF,
      xlab=xlbl,ylab=ylbl,ylim=c(50,150),xlim=c(1,9))
-points(tl~I(otoX+sep),data=subset(pwfGrow,sex=="Male"),pch=19,col=colM)
-points(tl~I(otoX-sep),data=subset(pwfGrow,sex=="Unknown" & sex2=="Female"),pch=1,col="black")
-points(tl~I(otoX+sep),data=subset(pwfGrow,sex=="Unknown" & sex2=="Male"),pch=1,col="red")
+points(tl~I(ageOX+sep),data=subset(pwfGrow,sex=="Male"),pch=19,col=colM)
+points(tl~I(ageOX-sep),data=subset(pwfGrow,sex=="Unknown" & sex2=="Female"),pch=1,col="black")
+points(tl~I(ageOX+sep),data=subset(pwfGrow,sex=="Unknown" & sex2=="Male"),pch=1,col="red")
 legend("topleft",legend=c("Female","Male"),pch=16,col=c("black","red"),bty="n")
 
 
@@ -91,12 +98,13 @@ legend("topleft",legend=c("Female","Male"),pch=16,col=c("black","red"),bty="n")
 ##   sex fish were given age-2 and partitioned as above).
 ## ===========================================================
 ## -----------------------------------------------------------
-## Use the ages in common for both sexes -- 3 and 7 (and, thus,
-##   5).  Did not use age-2 b/c assumed to be same given the
-##   decision with unknown fish from above.
+## Use the ages in common for both sexes -- 2 and 6 (and, thus,
+##   4).  Did not use age-1 b/c assumed to be same given the
+##   decision with unknown fish from above.  Did not use age-7
+##   b/c only one male there.
 ## -----------------------------------------------------------
-age1 <- 3
-age3 <- 7
+age1 <- 2
+age3 <- 6
 
 ## -----------------------------------------------------------
 ## The most general model (all parameters differ) and the
@@ -105,32 +113,32 @@ age3 <- 7
 ##   that vary between sexes in that model.
 ## -----------------------------------------------------------
 # most general model --- all parameters differ
-vbGen <- tl~L1[sex2]+(L3[sex2]-L1[sex2])*((1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1[sex2]))^(2*(otoX-age1)/(age3-age1)))/(1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1[sex2]))^2))
+vbGen <- tl~L1[sex2]+(L3[sex2]-L1[sex2])*((1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1[sex2]))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1[sex2]))^2))
 # assume that L1 is in common
-vb23 <- tl~L1+(L3[sex2]-L1)*((1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1))^(2*(otoX-age1)/(age3-age1)))/(1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1))^2))
+vb23 <- tl~L1+(L3[sex2]-L1)*((1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3[sex2]-L2[sex2])/(L2[sex2]-L1))^2))
 # assume that L2 is in common
-vb13 <- tl~L1[sex2]+(L3[sex2]-L1[sex2])*((1-((L3[sex2]-L2)/(L2-L1[sex2]))^(2*(otoX-age1)/(age3-age1)))/(1-((L3[sex2]-L2)/(L2-L1[sex2]))^2))
+vb13 <- tl~L1[sex2]+(L3[sex2]-L1[sex2])*((1-((L3[sex2]-L2)/(L2-L1[sex2]))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3[sex2]-L2)/(L2-L1[sex2]))^2))
 # assume that L3 is in common
-vb12 <- tl~L1[sex2]+(L3-L1[sex2])*((1-((L3-L2[sex2])/(L2[sex2]-L1[sex2]))^(2*(otoX-age1)/(age3-age1)))/(1-((L3-L2[sex2])/(L2[sex2]-L1[sex2]))^2))
+vb12 <- tl~L1[sex2]+(L3-L1[sex2])*((1-((L3-L2[sex2])/(L2[sex2]-L1[sex2]))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3-L2[sex2])/(L2[sex2]-L1[sex2]))^2))
 
 ## -----------------------------------------------------------
 ## Get starting values ... close to mean lengths-at-age with
 ##   some adjustments so that L1<L2<L3.
 ## -----------------------------------------------------------
 # get mean lengths-at-age and sex
-pwfGrow %>% group_by(sex2,otoX) %>% summarize(mean(tl))
-svGen  <- list(L1=c(88,88),L2=c(114,100),L3=c(138,108))
-sv23 <- list(L1=88,L2=c(114,100),L3=c(138,108))
-sv13 <- list(L1=c(88,88),L2=107,L3=c(138,108))
-sv12 <- list(L1=c(88,88),L2=c(114,100),L3=123)
+pwfGrow %>% group_by(sex2,ageOX) %>% summarize(mean(tl))
+svGen  <- list(L1=c(84,84),L2=c(110,99),L3=c(140,118))
+sv23   <- list(L1=  84,    L2=c(110,99),L3=c(140,118))
+sv13   <- list(L1=c(84,84),L2=  105,    L3=c(140,118))
+sv12   <- list(L1=c(84,84),L2=c(110,99),L3=  129)
 
 ## -----------------------------------------------------------
 ## The Port algorithm was used to help model fitting ... can
 ##   set constraints so the algorithm does not wander off into
 ##   unreasonable values.  Constraints are set below.
 ## -----------------------------------------------------------
-lowCom <- c( 70, 90,100)
-upCom <-  c(110,130,150)
+lowCom <- c( 70, 90,108)
+upCom <-  c(110,130,160)
 upGen <- unlist(lapply(upCom,rep,2))
 lowGen <- unlist(lapply(lowCom,rep,2))
 up23 <- unlist(mapply(rep,upCom,c(1,2,2)))
@@ -144,14 +152,14 @@ low12 <- unlist(mapply(rep,lowCom,c(2,2,1)))
 ## Fit the four models
 ## -----------------------------------------------------------
 fitGen <- nls(vbGen,data=pwfGrow,start=svGen,algorithm="port",lower=lowGen,upper=upGen)
-fit23 <- nls(vb23,data=pwfGrow,start=sv23)
+fit23 <- nls(vb23,data=pwfGrow,start=sv23,algorithm="port",lower=low23,upper=up23)
 fit13 <- nls(vb13,data=pwfGrow,start=sv13,algorithm="port",lower=low13,upper=up13)
 fit12 <- nls(vb12,data=pwfGrow,start=sv12,algorithm="port",lower=low12,upper=up12)
 
 ## -----------------------------------------------------------
 ## Gather the ANOVA results for a simple output
-## !! No difference at age-3
-## !! Apparent difference at age-5 and age-7
+## !! No difference at age-2
+## !! Apparent difference at age-4 and age-6
 ## -----------------------------------------------------------
 extraSS(fit23,fit13,fit12,com=fitGen)
 
@@ -161,12 +169,12 @@ extraSS(fit23,fit13,fit12,com=fitGen)
 ##   common and the model with only L1 in common.
 ## -----------------------------------------------------------
 # assume that L1 and L2 are in common
-vb3 <- tl~L1+(L3[sex2]-L1)*((1-((L3[sex2]-L2)/(L2-L1))^(2*(otoX-age1)/(age3-age1)))/(1-((L3[sex2]-L2)/(L2-L1))^2))
+vb3 <- tl~L1+(L3[sex2]-L1)*((1-((L3[sex2]-L2)/(L2-L1))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3[sex2]-L2)/(L2-L1))^2))
 # assume that L1 and L3 are in common
-vb2 <- tl~L1+(L3-L1)*((1-((L3-L2[sex2])/(L2[sex2]-L1))^(2*(otoX-age1)/(age3-age1)))/(1-((L3-L2[sex2])/(L2[sex2]-L1))^2))
+vb2 <- tl~L1+(L3-L1)*((1-((L3-L2[sex2])/(L2[sex2]-L1))^(2*(ageOX-age1)/(age3-age1)))/(1-((L3-L2[sex2])/(L2[sex2]-L1))^2))
 # starting values
-sv3 <- list(L1=88,L2=107,L3=c(138,108))
-sv2 <- list(L1=88,L2=c(114,100),L3=123)
+sv3 <- list(L1=84,L2=  105,     L3=c(140,118))
+sv2 <- list(L1=84,L2=c(110,99), L3=  129)
 # constraints
 up3 <- unlist(mapply(rep,upCom,c(1,1,2)))
 low3 <- unlist(mapply(rep,lowCom,c(1,1,2)))
@@ -178,7 +186,7 @@ fit2 <- nls(vb2,data=pwfGrow,start=sv2,algorithm="port",lower=low2,upper=up2)
 # anova
 extraSS(fit3,fit2,com=fit23)
 ## -----------------------------------------------------------
-## !! Confirms apparent difference at age-5 and age-7
+## !! Confirms apparent difference at age-4 and age-6
 ## -----------------------------------------------------------
 
 ## ===========================================================
@@ -203,8 +211,8 @@ svFEM <- coef(fitGen)[c(1,3,5)]
 svMAL <- coef(fitGen)[c(2,4,6)]
 names(svFEM) <- names(svMAL) <- c("L1","L2","L3")
 # fit the models
-vbFEM <- nls(tl~vbFrancis(otoX,L1,L2,L3,t1=age1,t3=age3),data=pwfGrow.FEM,start=svFEM)
-vbMAL <- nls(tl~vbFrancis(otoX,L1,L2,L3,t1=age1,t3=age3),data=pwfGrow.MAL,start=svMAL)
+vbFEM <- nls(tl~vbFrancis(ageOX,L1,L2,L3,t1=age1,t3=age3),data=pwfGrow.FEM,start=svFEM)
+vbMAL <- nls(tl~vbFrancis(ageOX,L1,L2,L3,t1=age1,t3=age3),data=pwfGrow.MAL,start=svMAL)
 # compare coefficients from these to the general model
 cbind(svFEM,coef(vbFEM))
 cbind(svMAL,coef(vbMAL))
@@ -231,7 +239,7 @@ round(coefMAL,1)
 # Predicted lengths at various ages
 bootFEM1 <- bootFEM$coefboot
 bootMAL1 <- bootMAL$coefboot
-for (i in 2:9) {
+for (i in 1:9) {
   tmp <- apply(bootFEM$coefboot,MARGIN=1,FUN=vbFrancis,t=i,t1=c(age1,age3))
   bootFEM1 <- cbind(bootFEM1,tmp)
   tmp <- apply(bootMAL$coefboot,MARGIN=1,FUN=vbFrancis,t=i,t1=c(age1,age3))
@@ -242,10 +250,10 @@ for (i in 2:9) {
 pLenFEM <- t(apply(bootFEM1[,-(1:3)],MARGIN=2,FUN=quantile,probs=c(0.025,0.975)))
 pLenMAL <- t(apply(bootMAL1[,-(1:3)],MARGIN=2,FUN=quantile,probs=c(0.025,0.975)))
 # Append predicted lengths-at-age
-pLenFEM <- cbind(predict(vbFEM,data.frame(otoX=2:9)),pLenFEM)
-pLenMAL <- cbind(predict(vbMAL,data.frame(otoX=2:9)),pLenMAL)
+pLenFEM <- cbind(predict(vbFEM,data.frame(ageOX=1:9)),pLenFEM)
+pLenMAL <- cbind(predict(vbMAL,data.frame(ageOX=1:9)),pLenMAL)
 colnames(pLenMAL)[1] <- colnames(pLenFEM)[1] <- "Estimate"
-# Note that ages 3, 5, and 7 are the same as the model coefficients
+# Note that ages 2, 4, and 6 are the same as the model coefficients
 round(pLenFEM,1)
 round(pLenMAL,1)
 
@@ -253,15 +261,84 @@ round(pLenMAL,1)
 ## Fitplot for each sex
 ## ===========================================================
 # Base plot
-plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(2,9),ylim=c(55,150),yaxt="n")
-curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=2,to=9,lwd=3,lty=2,col="black",add=TRUE)
-polygon(c(2:9,rev(2:9)),c(pLenFEM[,"2.5%"],rev(pLenFEM[,"97.5%"])),col=rgb(0,0,0,0.3),border=NA)
-polygon(c(2:7,rev(2:7)),c(pLenMAL[1:6,"2.5%"],rev(pLenMAL[1:6,"97.5%"])),col=rgb(1,0,0,0.3),border=NA)
-curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=2,to=7,lwd=3,col=rgb(1,0,0,0.6),add=TRUE)
-points(tl~I(otoX-sep),data=pwfGrow.FEM,pch=16,col=colF)
-points(tl~I(otoX+sep),data=pwfGrow.MAL,pch=16,col=colM)
+plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(1,9),ylim=c(55,150),yaxt="n")
+curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=1,to=9,lwd=3,lty=2,col="black",add=TRUE)
+polygon(c(1:9,rev(1:9)),c(pLenFEM[,"2.5%"],rev(pLenFEM[,"97.5%"])),col=rgb(0,0,0,0.3),border=NA)
+polygon(c(1:7,rev(1:7)),c(pLenMAL[1:7,"2.5%"],rev(pLenMAL[1:7,"97.5%"])),col=rgb(1,0,0,0.3),border=NA)
+curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=1,to=7,lwd=3,col=rgb(1,0,0,0.6),add=TRUE)
+points(tl~I(ageOX-sep),data=pwfGrow.FEM,pch=16,col=colF)
+points(tl~I(ageOX+sep),data=pwfGrow.MAL,pch=16,col=colM)
 legend("topleft",c("Female","Male"),lwd=2,col=c("black","red"),pch=16,bty="n")
 axis(2,seq(60,140,20))
+
+
+
+## ===========================================================
+## Fitplot for each sex -- for publication (if decided to use)
+##   see below for a different version.
+## ===========================================================
+## -----------------------------------------------------------
+## Put the result into a PDF file
+## -----------------------------------------------------------
+figw <- 5 # inches
+figh <- figw
+ptsz <- 12
+pdf("Figs/Figure4.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+
+## -----------------------------------------------------------
+## Set some constants for plotting
+## -----------------------------------------------------------
+# base line width
+lwid <- 2
+sep <- 0.04
+# plotting parameters
+par(mar=c(3.5,3.5,0.5,0.5),mgp=c(1.8,0.4,0),tcl=-0.2,las=1,xaxs="i",yaxs="i")
+bg <- "gray50"
+# labels
+xlbl <- "Consensus Otolith Age"
+ylbl <- "Total Length (mm)"
+
+## -----------------------------------------------------------
+## Make the figure
+## -----------------------------------------------------------
+# confidence bands (re-compute to make more smooth)
+# females
+sagesFEM <- seq(1,9,length.out=100)
+bootFEM2 <- NULL
+for (i in sagesFEM) bootFEM2 <- cbind(bootFEM2,apply(bootFEM$coefboot,MARGIN=1,FUN=vbFrancis,t=i,t1=c(age1,age3)))
+pLenFEM2 <- t(apply(bootFEM2,MARGIN=2,FUN=quantile,probs=c(0.025,0.975)))
+# males
+sagesMAL <- seq(1,7,length.out=100)
+bootMAL2 <- NULL
+for (i in sagesMAL) bootMAL2 <- cbind(bootMAL2,apply(bootMAL$coefboot,MARGIN=1,FUN=vbFrancis,t=i,t1=c(age1,age3)))  
+pLenMAL2 <- t(apply(bootMAL2,MARGIN=2,FUN=quantile,probs=c(0.025,0.975)))
+
+# base plot
+plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(0.8,9.2),ylim=c(50,155),yaxt="n")
+# confidence polygons
+trnsp <- 0.2
+polygon(c(sagesFEM,rev(sagesFEM)),c(pLenFEM2[,"2.5%"],rev(pLenFEM2[,"97.5%"])),col=rgb(0,0,0,trnsp),border=NA)
+polygon(c(sagesMAL,rev(sagesMAL)),c(pLenMAL2[,"2.5%"],rev(pLenMAL2[,"97.5%"])),col=rgb(0,0,0,trnsp),border=NA)
+# best-fitcurves
+clr <- "gray40"
+curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=1,to=9,lwd=lwid+1,lty=1,col=clr,add=TRUE)
+curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=1,to=7,lwd=lwid+1,lty=1,col=clr,add=TRUE)
+# put points on with dots
+bg <- "gray50"
+lwd <- 1
+# femals
+points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Female"),pch=21,bg=bg,lwd=lwd)
+points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Unknown"),pch=1,bg=bg,lwd=lwd)
+# put male points on with squares
+points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Male"),pch=22,bg=bg,lwd=lwd)
+points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Unknown"),pch=0,bg=bg,lwd=lwd)
+# put on legend
+legend("topleft",c("Female","Male"),pch=c(21,22),pt.bg=bg,pt.lwd=lwd,bty="n")
+# add y-axis labels
+axis(2,seq(60,140,20))
+
+dev.off()
+
 
 ## ===========================================================
 ## Fitplot for each sex -- for publication (if decided to use)
@@ -272,7 +349,7 @@ axis(2,seq(60,140,20))
 figw <- 5 # inches
 figh <- figw
 ptsz <- 12
-pdf("Figs/FigGROW.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+pdf("Figs/Figure4_alt.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
@@ -287,23 +364,26 @@ par(mar=c(3.5,3.5,0.5,0.5),mgp=c(1.8,0.4,0),tcl=-0.2,las=1,xaxs="i",yaxs="i")
 ## Make the figure
 ## -----------------------------------------------------------
 # base plot
-plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(1.8,9.2),ylim=c(50,155),yaxt="n")
+plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(0.8,9.2),ylim=c(50,155),yaxt="n")
 # curve and CI for Females
-curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=2,to=9,lwd=lwid+1,lty=1,col="black",add=TRUE)
-lines((2:9),pLenFEM[,"2.5%"],lty=2,lwd=lwid,col="black")
-lines((2:9),pLenFEM[,"97.5%"],lty=2,lwd=lwid,col="black")
+curve(vbFrancis(x,L1=coef(vbFEM),t1=c(age1,age3)),from=1,to=9,lwd=lwid+1,lty=1,col="black",add=TRUE)
+lines(sagesFEM,pLenFEM2[,"2.5%"],lty=2,lwd=lwid,col="black")
+lines(sagesFEM,pLenFEM2[,"97.5%"],lty=2,lwd=lwid,col="black")
 # curve and CI for Males
 curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=2,to=7,lwd=lwid+1,lty=1,col="black",add=TRUE)
-lines((2:7),pLenMAL[1:6,"2.5%"],lty=2,lwd=lwid,col="black")
-lines((2:7),pLenMAL[1:6,"97.5%"],lty=2,lwd=lwid,col="black")
-# put female points on with dots
-points(tl~I(otoX-sep),data=subset(pwfGrow.FEM,sex=="Female"),pch=16)
-points(tl~I(otoX-sep),data=subset(pwfGrow.FEM,sex=="Unknown"),pch=1)
+lines(sagesMAL,pLenMAL2[,"2.5%"],lty=2,lwd=lwid,col="black")
+lines(sagesMAL,pLenMAL2[,"97.5%"],lty=2,lwd=lwid,col="black")
+# put points on with dots
+bg <- "gray50"
+lwd <- 1
+# femals
+points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Female"),pch=21,bg=bg,lwd=lwd)
+points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Unknown"),pch=1,bg=bg,lwd=lwd)
 # put male points on with squares
-points(tl~I(otoX+sep),data=subset(pwfGrow.MAL,sex=="Male"),pch=15)
-points(tl~I(otoX+sep),data=subset(pwfGrow.MAL,sex=="Unknown"),pch=0)
+points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Male"),pch=22,bg=bg,lwd=lwd)
+points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Unknown"),pch=0,bg=bg,lwd=lwd)
 # put on legend
-legend("topleft",c("Female","Male"),pch=c(16,15),bty="n")
+legend("topleft",c("Female","Male"),pch=c(21,22),pt.bg=bg,pt.lwd=lwd,bty="n")
 # add y-axis labels
 axis(2,seq(60,140,20))
 
@@ -316,17 +396,17 @@ dev.off()
 ##   Eschmeyer and Bailey included
 ## ===========================================================
 predLens <- cbind(age=1:9,
-                  predF=c(NA,pLenFEM[,"Estimate"]),
-                  lciF=c(NA,pLenFEM[,"2.5%"]),
-                  uciF=c(NA,pLenFEM[,"97.5%"]),
+                  predF=pLenFEM[,"Estimate"],
+                  lciF=pLenFEM[,"2.5%"],
+                  uciF=pLenFEM[,"97.5%"],
                   KB53F=c(46,69,88,107,117,123,130,NA,NA),
                   IR53F=c(37,64,82,96,NA,NA,NA,NA,NA),
                   AI53Ft=c(46,71,94,112,122,126,136,NA,NA),
                   LFP53F=c(46,68,90,106,118,123,NA,NA,NA),
                   
-                  predM=c(NA,pLenMAL[1:6,"Estimate"],NA,NA),
-                  lciM=c(NA,pLenMAL[1:6,"2.5%"],NA,NA),
-                  uciM=c(NA,pLenMAL[1:6,"97.5%"],NA,NA),
+                  predM=c(pLenMAL[1:7,"Estimate"],NA,NA),
+                  lciM=c(pLenMAL[1:7,"2.5%"],NA,NA),
+                  uciM=c(pLenMAL[1:7,"97.5%"],NA,NA),
                   KB53M=c(49,71,87,98,106,NA,NA,NA,NA),
                   IR53M=c(40,68,81,88,NA,NA,NA,NA,NA),
                   AI53Mt=c(50,75,95,108,NA,NA,NA,NA,NA),
@@ -337,14 +417,14 @@ print(predLens,digits=1,na.print="-")
 
 predLens <- data.frame(predLens)
 par(mfrow=c(1,2),mar=c(3,3,0.5,0.5),mgp=c(1.7,0.5,0),tcl=-0.2)
-plot(-1,-1,xlim=c(1,9),ylim=c(35,140),xlab="Age",ylab="Total Length")
+plot(-1,-1,xlim=c(1,9),ylim=c(35,150),xlab="Age",ylab="Total Length")
 lines(KB53F~age,data=predLens,lwd=2,lty=1,col="gray90")
 lines(IR53F~age,data=predLens,lwd=2,lty=1,col="gray80")
 lines(AI53Ft~age,data=predLens,lwd=2,lty=1,col="gray70")
 lines(LFP53F~age,data=predLens,lwd=2,lty=1,col="gray60")
 lines(predF~age,data=predLens,lwd=3,lty=1)
 legend("topleft",legend="Females",bty="n",cex=1.25)
-plot(-1,-1,xlim=c(1,9),ylim=c(35,140),xlab="Age",ylab="Total Length")
+plot(-1,-1,xlim=c(1,9),ylim=c(35,150),xlab="Age",ylab="Total Length")
 lines(KB53M~age,data=predLens,lwd=2,lty=1,col="gray90")
 lines(IR53M~age,data=predLens,lwd=2,lty=1,col="gray80")
 lines(AI53Mt~age,data=predLens,lwd=2,lty=1,col="gray70")
@@ -358,9 +438,9 @@ legend("topleft",legend="Males",bty="n",cex=1.25)
 ##   other life history studies included
 ## ===========================================================
 predLens <- cbind(age=1:9,
-                  predF=c(NA,pLenFEM[,"Estimate"]),
-                  lciF=c(NA,pLenFEM[,"2.5%"]),
-                  uciF=c(NA,pLenFEM[,"97.5%"]),
+                  predF=pLenFEM[,"Estimate"],
+                  lciF=pLenFEM[,"2.5%"],
+                  uciF=pLenFEM[,"97.5%"],
                   FLF=c(116,140,154,168,NA,NA,NA,NA,NA),
                   BKLF=c(57,70,75,NA,NA,NA,NA,NA,NA),
                   SBF=c(76,112,127,138,155,NA,NA,NA,NA),
@@ -371,9 +451,9 @@ predLens <- cbind(age=1:9,
                   MLF=c(NA,87,141,191,228,232,250,NA,262),
                   MLLF=c(NA,95,148,178,185,NA,NA,NA,NA),
                   
-                  predM=c(NA,pLenMAL[1:6,"Estimate"],NA,NA),
-                  lciM=c(NA,pLenMAL[1:6,"2.5%"],NA,NA),
-                  uciM=c(NA,pLenMAL[1:6,"97.5%"],NA,NA),
+                  predM=c(pLenMAL[1:7,"Estimate"],NA,NA),
+                  lciM=c(pLenMAL[1:7,"2.5%"],NA,NA),
+                  uciM=c(pLenMAL[1:7,"97.5%"],NA,NA),
                   FLM=c(117,128,140,NA,NA,NA,NA,NA,NA),
                   BKLM=c(57,64,71,NA,NA,NA,NA,NA,NA),
                   SBM=c(77,109,118,133,NA,NA,NA,NA,NA),

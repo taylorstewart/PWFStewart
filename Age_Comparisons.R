@@ -7,40 +7,41 @@
 ##############################################################
 ##############################################################
 ## ===========================================================
-## Source Data_Init Script ... get pwfAge data.frame
+## Source Data_Init Script ... get pwfAgeS, pwfAgeO, pwfAgeSO
 ## ===========================================================
 source("Data_Init.R")
-pwfAge
+
 
 
 ## ===========================================================
 ## Compare scale ages (Taylor Stewart v. Dalton Lebeda)
 ## ===========================================================
 ## -----------------------------------------------------------
-## Create specific data.frame for structure comparison
-##   i.e., both scale variables are not missing
+## How many fish were deemed to have unuseable scales?
+## How were unuseable scales related to length
+## Remove those fish from further analysis.
 ## -----------------------------------------------------------
-pwfScales <- filter(pwfAge,!is.na(scale1) & !is.na(scale2))
+Summarize(~useS,data=pwfAgeS)
+xtabs(~useS+lcat,data=pwfAgeS)
+pwfAgeS %<>% filter(useS=="YES")
+
+## -----------------------------------------------------------
+## How many fish did not have a consensus scale age?
+## -----------------------------------------------------------
+( numS.NoConsensus <- length(which(is.na(pwfAgeS$ageS))) )
+numS.NoConsensus/nrow(pwfAgeS)*100
 
 ## -----------------------------------------------------------
 ## Sample size for comparing scale ages
 ## -----------------------------------------------------------
-( numScales <- nrow(pwfScales) )
-xtabs(~sex+lcat,data=pwfScales)
-
-## -----------------------------------------------------------
-## Number (and percent) of fish where a scale age could not
-##  be agreed upon -- i.e., rows in pwfScales with NA in 
-##  scale variable
-## -----------------------------------------------------------
-( numScalesDisagree <- length(which(is.na(pwfScales$scale))) )
-numScalesDisagree/numScales*100
+( numS <- nrow(pwfAgeS) )
+xtabs(~sex+lcat,data=pwfAgeS)
 
 ## -----------------------------------------------------------
 ## Scales -- Bias Between Readers
 ## !! No signficant bias between TRS and DL
 ## -----------------------------------------------------------
-abS <- ageBias(scale1~scale2,data=pwfScales,ref.lab="TRS Age",nref.lab="DL Age")
+abS <- ageBias(ageS1~ageS2,data=pwfAgeS,ref.lab="TRS Age",nref.lab="DL Age")
 summary(abS,what=c("n","table","symmetry"))
 plot(abS)
 
@@ -48,100 +49,78 @@ plot(abS)
 ## Scales -- Precision Between Readers
 ## !! CV relatively high
 ## -----------------------------------------------------------
-apS <- agePrecision(scale1~scale2,data=pwfScales)
+apS <- agePrecision(ageS1~ageS2,data=pwfAgeS)
 summary(apS,what=c("precision","difference","absolute difference"),digits=2)
-# percentage difference within one year
-sum(apS$absdiff[1:2])/sum(apS$absdiff)*100
+# percentage difference within X years
+cumsum(apS$absdiff)/sum(apS$absdiff)*100
+
 
 
 ## ===========================================================
 ## Compare otolith ages (Taylor Stewart v. The Master)
 ## ===========================================================
 ## -----------------------------------------------------------
-## Create specific data.frame for structure comparison
-##   i.e., both otolith variables are not missing
+## How many fish were deemed to have unuseable otos?
+## How were unuseable otos related to length
+## Remove those fish from further analysis.
 ## -----------------------------------------------------------
-pwfOtos <- filter(pwfAge,!is.na(oto1) & !is.na(oto2))
+Summarize(~useO,data=pwfAgeO)
+tmp <- xtabs(~lcat+useO,data=pwfAgeO)
+round(prop.table(tmp,margin=1)*100,1)
+pwfAgeO %<>% filter(useO=="YES")
 
 ## -----------------------------------------------------------
-## Sample size for comparing otolith ages
+## How many fish did not have a consensus scale age?
 ## -----------------------------------------------------------
-( numOtos <- nrow(pwfOtos) )
-xtabs(~sex+lcat,data=pwfOtos)
+( numO.NoConsensus <- length(which(is.na(pwfAgeO$ageO))) )
+numO.NoConsensus/nrow(pwfAgeO)*100
 
 ## -----------------------------------------------------------
-## Number (and percent) of fish where an otolith age could not
-##  be agreed upon -- i.e., rows in pwfOtos with NA in oto
-##  variable
+## Sample size for comparing scale ages
 ## -----------------------------------------------------------
-( numOtosDisagree <- length(which(is.na(pwfOtos$oto))) )
-numOtosDisagree/numOtos*100
+( numO <- nrow(pwfAgeO) )
+xtabs(~sex+lcat,data=pwfAgeO)
 
 ## -----------------------------------------------------------
-## Otoliths -- Bias Between Readers
-## !! Weak evidence that DHO over-estimated relative to TRS
+## Otos -- Bias Between Readers
+## !! No signficant bias between TRS and DHO
 ## -----------------------------------------------------------
-abO <- ageBias(oto1~oto2,data=pwfOtos,ref.lab="TRS Age",nref.lab="DHO Age")
+abO <- ageBias(ageO1~ageO2,data=pwfAgeO,ref.lab="TRS Age",nref.lab="DHO Age")
 summary(abO,what=c("n","table","symmetry"))
 plot(abO)
 
 ## -----------------------------------------------------------
-## Otoliths -- Precision Between Readers
-## !! CV relatively high, % agreement relatively low
+## Otos -- Precision Between Readers
+## !! CV relatively high
 ## -----------------------------------------------------------
-apO <- agePrecision(oto1~oto2,data=pwfOtos)
+apO <- agePrecision(ageO1~ageO2,data=pwfAgeO)
 summary(apO,what=c("precision","difference","absolute difference"),digits=2)
-# percentage difference within one year
-sum(apO$absdiff[1:2])/sum(apO$absdiff)*100
+# percentage difference within X years
+cumsum(apO$absdiff)/sum(apO$absdiff)*100
+
 
 
 ## ===========================================================
 ## Compare scale and otolith (consensus) ages
 ## ===========================================================
 ## -----------------------------------------------------------
-## Create specific data.frame for structure comparison
-##   i.e., both otolith variables are not missing
-## -----------------------------------------------------------
-pwfSO <- filter(pwfAge,!is.na(scale) & !is.na(oto))
-nrow(pwfSO)
-xtabs(~sex+lcat,data=pwfSO)
-
-
-## -----------------------------------------------------------
 ## Bias Between Structures
 ## !! Very strong evidence that scales under-estimate age
 ## !!   relative to otolith ages starting, possibly, as early
 ## !!   as otolith age-2.
 ## -----------------------------------------------------------
-abSO <- ageBias(oto~scale,data=pwfSO,ref.lab="Consensus Otolith Age",nref.lab="Consensus Scale Age")
+abSO <- ageBias(ageO~ageS,data=pwfAgeSO,ref.lab="Consensus Otolith Age",nref.lab="Consensus Scale Age")
 summary(abSO,what=c("n","table","symmetry"))
 plot(abSO)
 
 
 ## ===========================================================
-## If we assume that all fish less than 75 mm are age-2, how
+## If we assume that all fish less than 75 mm are age-1, how
 ##   do scale and oto ages compare to that.
-## !! Otos (36%) and scales (8.3%) do not match age-2
-## !! Scales (83.3%) suggest age-1 ... do scales
-## !!   underestimate by 1 year?
+## !! Otos not so good, scales very good
 ## ===========================================================
-otos75 <- xtabs(~oto,data=subset(pwfOtos,tl<75))
-otos75["2"]/sum(otos75)*100
-scales75 <- xtabs(~scale,data=subset(pwfScales,tl<75))
-scales75["2"]/sum(scales75)*100
-scales75["1"]/sum(scales75)*100
-
-## ===========================================================
-## Explore the  bias between scales and otoliths if all scale
-##   ages were one greater (simulating missing the inner annulus).
-## !! Symmetry is equivocal (Bowker's says no, others say yes)
-## !! Plot suggests that scale under-estimation starts at
-## !!   age-5 (though not significant until age-7).
-## ===========================================================
-pwfSO <- mutate(pwfSO,scaleAdj=scale+1)
-abSO2 <- ageBias(oto~scaleAdj,data=pwfSO,ref.lab="tolith Age",nref.lab="Adj Scale Age")
-summary(abSO2,what=c("n","table","symmetry"))
-plot(abSO2)
+Summarize(~factor(ageO),data=Subset(pwfAgeO,tl<75))
+Summarize(~factor(ageS),data=Subset(pwfAgeS,tl<75))
 
 
 
@@ -154,7 +133,7 @@ plot(abSO2)
 figw <- 5 # inches
 figh <- figw
 ptsz <- 12
-pdf("Figs/FigSO.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+pdf("Figs/Figure2.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
@@ -175,13 +154,13 @@ dev.off()
 ## Info for Publication quality table
 ## ===========================================================
 tmp <- summary(abS)
-tmpS <- c(apS$n,tmp$p,apS$CV,apS$APE,apS$absdiff/sum(apS$absdiff)*100,NA,NA,NA,NA)
+tmpS <- c(apS$n,tmp$p,apS$CV,apS$APE,apS$absdiff/sum(apS$absdiff)*100,NA,NA)
 tmp <- summary(abO)
-tmpO <- c(apO$n,tmp$p,apO$CV,apO$APE,apO$absdiff/sum(apO$absdiff)*100,NA,NA,NA)
+tmpO <- c(apO$n,tmp$p,apO$CV,apO$APE,apO$absdiff/sum(apO$absdiff)*100,NA)
 tmp <- summary(abSO)
-apSO <- agePrecision(oto~scale,data=pwfSO)
+apSO <- agePrecision(ageO~ageS,data=pwfAgeSO)
 tmpSO <- c(apSO$n,tmp$p,NA,NA,apSO$absdiff/sum(apSO$absdiff)*100)
 tmp <- rbind(tmpS,tmpO,tmpSO)
-colnames(tmp) <- c("n","McN","E-H","Bow","CV","APE","0","1","2","3","4","5","6")
+colnames(tmp) <- c("n","McN","E-H","Bow","CV","APE","0","1","2","3","4")
 round(tmp,4)
-sum(tmp["tmpSO",c("3","4","5","6")])
+sum(tmp["tmpSO",c("3","4")])

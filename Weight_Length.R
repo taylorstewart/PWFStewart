@@ -26,16 +26,14 @@ library(NCStats)   # compSlopes()
 ##   FishID #214 -- wt too light for tl
 ##   FishID #216 -- wt too light for tl
 ## ===========================================================
-pwfWL <- pwfWL %>% 
-  filter(sex!="N/A") %>%
-  mutate(logtl=log10(tl),
-         logwt=log10(wt)) %>%
-  filter(!(fish %in% c(184,214,216)))
+pwfWL %<>% filter(sex!="N/A") %>%
+           mutate(logtl=log10(tl),logwt=log10(wt)) %>%
+           filter(!(fishID %in% c(184,214,216)))
 pwfWL
 
 ## ===========================================================
 ## Fit the W-L DVR using sex to see if there is a significant
-##   difference in W-L between female, male, and uknown sex
+##   difference in W-L between female, male, and unknown sex
 ##   fish.
 ## 
 ## !! Slight indiciation for a difference in slopes among the
@@ -60,7 +58,7 @@ fitPlot(lm2)
 residPlot(lm2,student=TRUE)
 summary(lm2)
 (cf <- coef(lm2) )
-exp(cf["(Intercept)"])
+exp(cf[["(Intercept)"]])
 rSquared(lm2)
 
 ## -----------------------------------------------------------
