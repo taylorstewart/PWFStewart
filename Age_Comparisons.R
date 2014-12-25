@@ -133,8 +133,8 @@ Summarize(~factor(ageS),data=Subset(pwfAgeS,tl<75))
 figw <- 5 # inches
 figh <- figw
 ptsz <- 12
-pdf("Figs/Figure2.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
-
+#pdf("Figs/Figure2.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+png("Figs/Figure2.PNG",width=figw,height=figh,units="in",pointsize=ptsz,family="Times",res=300)
 ## -----------------------------------------------------------
 ## Set some constants for plotting
 ## -----------------------------------------------------------

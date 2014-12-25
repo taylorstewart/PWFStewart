@@ -283,7 +283,8 @@ axis(2,seq(60,140,20))
 figw <- 5 # inches
 figh <- figw
 ptsz <- 12
-pdf("Figs/Figure4.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+#pdf("Figs/Figure4.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+png("Figs/Figure4.PNG",width=figw,height=figh,units="in",pointsize=ptsz,family="Times",res=300)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
