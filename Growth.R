@@ -283,7 +283,8 @@ axis(2,seq(60,140,20))
 figw <- 5 # inches
 figh <- figw
 ptsz <- 12
-pdf("Figs/Figure4.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+#pdf("Figs/Figure4.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+png("Figs/Figure4.PNG",width=figw,height=figh,units="in",pointsize=ptsz,family="Times",res=300)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
@@ -392,104 +393,70 @@ dev.off()
 
 
 ## ===========================================================
-## Table of predicted lengths-at-age with results from 
-##   Eschmeyer and Bailey included
+## Table of predicted lengths-at-age with OBSERVED (not
+##   back-calculated) results from other life history studies.
+##   Table 3 and 4 in manuscript
+##
+##, Location,Abbreviations,Source,Units,Type,From,Structure,DHO
+##, "Keewenaw Bay, Lake Superior (MI, USA)",KB,Eschmeyer and Bailey (1955),TL,at-capture,Table 11,Scales,confirmed
+##, "Isle Royale, Lake Superior (MI, USA)",IR,Eschmeyer and Bailey (1955),TL,at-capture,Table 13,Scales,confirmed
+##, "Flathead Lake (MT, USA)",FL,Weisel et al.  (1973),TL,at-capture,Table 6,Scales,confirmed
+##, "Brooks Lake (AK, USA)",BKL,Heard and Hartman (1973),FL,at-capture,Table 6,Scales,confirmed
+##, "Naknek Lake (AK, USA)",NL,Heard and Hartman (1973),FL,at-capture,Table 6,Scales,confirmed
+##, "Cluculz Lake (BC, CAN)",CL,McCart (1963),FL,at-capture,Table 11,Scales,confirmed
+##, "Tacheeda Lake (BC, CAN)",TL,McCart (1963),FL,at-capture,Table 12,Scales,confirmed
+##, "MacLure Lake (BC, CAN)",ML,McCart (1963),FL,at-capture,Table 13,Scales,confirmed
+##, "McLeese Lake (BC, CAN)",MLL,McCart (1963),FL,at-capture,Table 14,Scales,confirmed
+##, "Dina Lake #1 (BC, CAN)",DL1,McPhail and Zemlak (2001),FL,at-capture,Table 4,Scales/Otos??,confirmed
+##, "Apostle Islands, Lake Superior (WI, USA)",DID NOT USE BECAUSE  THEY ONLY SHOWED BACK_CALCULATED GROWTH,,,,,,
+##, "Laughing Fish Point, Lake Superior (MI, USA)",DID NOT USE BECAUSE  THEY ONLY SHOWED BACK_CALCULATED GROWTH,,,,,,
+##, "Lake McDonald",DID NOT USE COULD NOT FIND SOURCE AND ESCHMEYER_BAILEY VALUES WERE BACK_CALCULATED,,,,,,
+##, "Bull Lake",DID NOT USE COULD NOT FIND SOURCE AND ESCHMEYER_BAILEY VALUES WERE BACK_CALCULATED,,,,,,
+
 ## ===========================================================
-predLens <- cbind(age=1:9,
-                  predF=pLenFEM[,"Estimate"],
-                  lciF=pLenFEM[,"2.5%"],
-                  uciF=pLenFEM[,"97.5%"],
-                  KB53F=c(46,69,88,107,117,123,130,NA,NA),
-                  IR53F=c(37,64,82,96,NA,NA,NA,NA,NA),
-                  AI53Ft=c(46,71,94,112,122,126,136,NA,NA),
-                  LFP53F=c(46,68,90,106,118,123,NA,NA,NA),
+convFL2TL <- function(d,digits=0) {
+  for (i in 1:length(d)) d[i] <- round(ifelse(d[i]<100,1.077*d[i],1.0845*d[i]),0)
+  d
+}
+
+predLensF <- cbind(pred=pLenFEM[,"Estimate"],
+                   lci=pLenFEM[,"2.5%"],
+                   uci=pLenFEM[,"97.5%"],
+                   KB53=         c( 77,101,106,120,126,128,136, NA, NA),
+                   IR53=         c( 59, 81, 88,100, NA, NA, NA, NA, NA),
+                   FL= convFL2TL(c(116,140,154,168, NA, NA, NA, NA, NA)),
+                   BKL=convFL2TL(c( 57, 70, 75, NA, NA, NA, NA, NA, NA)),
+                   NL= convFL2TL(c( 76,112,127,138,155, NA, NA, NA, NA)),
+                   CL= convFL2TL(c( 81,110,121,127,142,156, NA, NA, NA)),
+                   TL= convFL2TL(c( 84,106,114,120,126,136, NA, NA, NA)),
+                   ML= convFL2TL(c( NA,117,190,219,245,248,257, NA,271)),
+                   MLL=convFL2TL(c( NA,109,158,194,194, NA, NA, NA, NA)),
+                   DL1=convFL2TL(c( 84,105,111,118,122,123,122, NA, NA))
+             )
+rownames(predLensF) <- paste0("age-",1:9,"+")
+predLensF <- rbind(predLensF,minTL=c(NA,NA,NA, 57,NA, 89,convFL2TL(c(48, 51, 83, 78,105,105, 27))),
+                             maxTL=c(NA,NA,NA,138,NA,150,convFL2TL(c(78,155,158,138,275,195,215)))
+                   )
+print(predLensF,digits=1,na.print="-")
                   
-                  predM=c(pLenMAL[1:7,"Estimate"],NA,NA),
-                  lciM=c(pLenMAL[1:7,"2.5%"],NA,NA),
-                  uciM=c(pLenMAL[1:7,"97.5%"],NA,NA),
-                  KB53M=c(49,71,87,98,106,NA,NA,NA,NA),
-                  IR53M=c(40,68,81,88,NA,NA,NA,NA,NA),
-                  AI53Mt=c(50,75,95,108,NA,NA,NA,NA,NA),
-                  LFP53M=c(48,79,92,102,106,NA,NA,NA,NA)
-)
-rownames(predLens) <- NULL
-print(predLens,digits=1,na.print="-")
-
-predLens <- data.frame(predLens)
-par(mfrow=c(1,2),mar=c(3,3,0.5,0.5),mgp=c(1.7,0.5,0),tcl=-0.2)
-plot(-1,-1,xlim=c(1,9),ylim=c(35,150),xlab="Age",ylab="Total Length")
-lines(KB53F~age,data=predLens,lwd=2,lty=1,col="gray90")
-lines(IR53F~age,data=predLens,lwd=2,lty=1,col="gray80")
-lines(AI53Ft~age,data=predLens,lwd=2,lty=1,col="gray70")
-lines(LFP53F~age,data=predLens,lwd=2,lty=1,col="gray60")
-lines(predF~age,data=predLens,lwd=3,lty=1)
-legend("topleft",legend="Females",bty="n",cex=1.25)
-plot(-1,-1,xlim=c(1,9),ylim=c(35,150),xlab="Age",ylab="Total Length")
-lines(KB53M~age,data=predLens,lwd=2,lty=1,col="gray90")
-lines(IR53M~age,data=predLens,lwd=2,lty=1,col="gray80")
-lines(AI53Mt~age,data=predLens,lwd=2,lty=1,col="gray70")
-lines(LFP53M~age,data=predLens,lwd=2,lty=1,col="gray60")
-lines(predM~age,data=predLens,lwd=3,lty=1)
-legend("topleft",legend="Males",bty="n",cex=1.25)
-
-
-## ===========================================================
-## Table of predicted lengths-at-age with results from 
-##   other life history studies included
-## ===========================================================
-predLens <- cbind(age=1:9,
-                  predF=pLenFEM[,"Estimate"],
-                  lciF=pLenFEM[,"2.5%"],
-                  uciF=pLenFEM[,"97.5%"],
-                  FLF=c(116,140,154,168,NA,NA,NA,NA,NA),
-                  BKLF=c(57,70,75,NA,NA,NA,NA,NA,NA),
-                  SBF=c(76,112,127,138,155,NA,NA,NA,NA),
-                  LMF=c(62,92,108,NA,NA,NA,NA,NA,NA),
-                  BLF=c(60,119,152,NA,NA,NA,NA,NA,NA),
-                  CLF=c(53,91,112,121,136,152,NA,NA,NA),
-                  TLF=c(58,89,105,114,124,134,NA,NA,NA),
-                  MLF=c(NA,87,141,191,228,232,250,NA,262),
-                  MLLF=c(NA,95,148,178,185,NA,NA,NA,NA),
                   
-                  predM=c(pLenMAL[1:7,"Estimate"],NA,NA),
-                  lciM=c(pLenMAL[1:7,"2.5%"],NA,NA),
-                  uciM=c(pLenMAL[1:7,"97.5%"],NA,NA),
-                  FLM=c(117,128,140,NA,NA,NA,NA,NA,NA),
-                  BKLM=c(57,64,71,NA,NA,NA,NA,NA,NA),
-                  SBM=c(77,109,118,133,NA,NA,NA,NA,NA),
-                  LMM=c(64,88,101,108,NA,NA,NA,NA,NA),
-                  BLM=c(59,113,130,NA,NA,NA,NA,NA,NA),
-                  CLM=c(64,96,107,112,118,NA,NA,NA,NA),
-                  TLM=c(58,80,100,NA,NA,NA,NA,NA,NA),
-                  MLM=c(NA,87,133,188,174,215,NA,NA,NA),
-                  MLLM=c(NA,95,146,167,NA,NA,NA,NA,NA)
+predLensM <- cbind(pred=c(pLenMAL[1:7,"Estimate"]),
+                   lci=c(pLenMAL[1:7,"2.5%"]),
+                   uci=c(pLenMAL[1:7,"97.5%"]),
+                   KB53=         c( 76, 94,102,106,110, NA, NA),
+                   IR53=         c( 63, 78, 85, 92, NA, NA, NA),
+                   FL=           c(117,128,140, NA, NA, NA, NA),
+                   BKL=convFL2TL(c( 57, 64, 71, NA, NA, NA, NA)),
+                   NL= convFL2TL(c( 77,109,118,133, NA, NA, NA)),
+                   CL= convFL2TL(c( 92,113,116,116,122, NA, NA)),
+                   TL= convFL2TL(c( 82, 90,108, NA, NA, NA, NA)),
+                   ML= convFL2TL(c( NA,121,192,210,185,225, NA)),
+                   MLL=convFL2TL(c( NA,111,153,178, NA, NA, NA)),
+                   DL1=convFL2TL(c( 73, 94,101,105, NA, NA, NA))
+             )
+rownames(predLensM) <- paste0("age-",1:7,"+")
+predLensM <- rbind(predLensM,minTL=c(NA,NA,NA, 67,NA, 84,convFL2TL(c(45, 51, 88, 78,105,105, 62))),
+                             maxTL=c(NA,NA,NA,118,NA,170,convFL2TL(c(75,141,128,113,235,175,122)))
 )
-rownames(predLens) <- NULL
-print(predLens,digits=1,na.print="-")
+print(predLensM,digits=1,na.print="-")
 
-predLens <- data.frame(predLens)
-par(mfrow=c(1,2),mar=c(3,3,0.5,0.5),mgp=c(1.7,0.5,0),tcl=-0.2)
-plot(-1,-1,xlim=c(1,9),ylim=c(50,275),xlab="Age",ylab="Total Length")
-lines(FLF~age,data=predLens,lwd=2,lty=1,col="gray90")
-lines(BKLF~age,data=predLens,lwd=2,lty=1,col="gray80")
-lines(SBF~age,data=predLens,lwd=2,lty=1,col="gray70")
-lines(LMF~age,data=predLens,lwd=2,lty=1,col="gray60")
-lines(BLF~age,data=predLens,lwd=2,lty=1,col="gray50")
-lines(CLF~age,data=predLens,lwd=2,lty=1,col="gray40")
-lines(TLF~age,data=predLens,lwd=2,lty=1,col="gray30")
-lines(MLF~age,data=predLens,lwd=2,lty=1,col="gray20")
-lines(MLLF~age,data=predLens,lwd=2,lty=1,col="gray10")
-lines(predF~age,data=predLens,lwd=3,lty=1)
-legend("topleft",legend="Females",bty="n",cex=1.25)
-plot(-1,-1,xlim=c(1,9),ylim=c(50,275),xlab="Age",ylab="Total Length")
-lines(FLM~age,data=predLens,lwd=2,lty=1,col="gray90")
-lines(BKLM~age,data=predLens,lwd=2,lty=1,col="gray80")
-lines(SBM~age,data=predLens,lwd=2,lty=1,col="gray70")
-lines(LMM~age,data=predLens,lwd=2,lty=1,col="gray60")
-lines(BLM~age,data=predLens,lwd=2,lty=1,col="gray50")
-lines(CLM~age,data=predLens,lwd=2,lty=1,col="gray40")
-lines(TLM~age,data=predLens,lwd=2,lty=1,col="gray30")
-lines(MLM~age,data=predLens,lwd=2,lty=1,col="gray20")
-lines(MLLM~age,data=predLens,lwd=2,lty=1,col="gray10")
-lines(predM~age,data=predLens,lwd=3,lty=1)
-legend("topleft",legend="Males",bty="n",cex=1.25)

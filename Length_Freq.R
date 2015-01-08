@@ -90,7 +90,8 @@ str(pwfLens06_13)
 figw <- 24/2.54
 figh <- figw*0.8
 ptsz <- 18
-pdf("Figs/Figure3.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+#pdf("Figs/Figure3.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
+png("Figs/Figure3.PNG",width=figw,height=figh,units="in",pointsize=ptsz,family="Times",res=300)
 
 ## -----------------------------------------------------------
 ## Set some constants for plotting
