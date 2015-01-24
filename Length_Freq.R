@@ -87,9 +87,9 @@ str(pwfLens06_13)
 ## -----------------------------------------------------------
 ## Put the result into a PDF file
 ## -----------------------------------------------------------
-figw <- 24/2.54
-figh <- figw*0.8
-ptsz <- 18
+figw <- 5 # inches
+figh <- figw*1.1
+ptsz <- 15
 #pdf("Figs/Figure3.PDF",width=figw,height=figh,pointsize=ptsz,family="Times",onefile=TRUE)
 png("Figs/Figure3.PNG",width=figw,height=figh,units="in",pointsize=ptsz,family="Times",res=300)
 
