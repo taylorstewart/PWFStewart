@@ -315,7 +315,7 @@ for (i in sagesMAL) bootMAL2 <- cbind(bootMAL2,apply(bootMAL$coefboot,MARGIN=1,F
 pLenMAL2 <- t(apply(bootMAL2,MARGIN=2,FUN=quantile,probs=c(0.025,0.975)))
 
 # base plot
-plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(0.8,9.2),ylim=c(50,155),yaxt="n")
+plot(-1,-1,xlab=xlbl,ylab=ylbl,xlim=c(0.8,9.2),ylim=c(50,155),yaxt="n",xaxt="n")
 # confidence polygons
 trnsp <- 0.2
 polygon(c(sagesFEM,rev(sagesFEM)),c(pLenFEM2[,"2.5%"],rev(pLenFEM2[,"97.5%"])),col=rgb(0,0,0,trnsp),border=NA)
@@ -327,7 +327,7 @@ curve(vbFrancis(x,L1=coef(vbMAL),t1=c(age1,age3)),from=1,to=7,lwd=lwid+1,lty=1,c
 # put points on with dots
 bg <- "gray50"
 lwd <- 1
-# femals
+# females
 points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Female"),pch=21,bg=bg,lwd=lwd)
 points(tl~I(ageOX-sep),data=subset(pwfGrow.FEM,sex=="Unknown"),pch=1,bg=bg,lwd=lwd)
 # put male points on with squares
@@ -335,8 +335,9 @@ points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Male"),pch=22,bg=bg,lwd=lwd
 points(tl~I(ageOX+sep),data=subset(pwfGrow.MAL,sex=="Unknown"),pch=0,bg=bg,lwd=lwd)
 # put on legend
 legend("topleft",c("Female","Male"),pch=c(21,22),pt.bg=bg,pt.lwd=lwd,bty="n")
-# add y-axis labels
+# add axis labels
 axis(2,seq(60,140,20))
+axis(1,1:9)
 
 dev.off()
 
