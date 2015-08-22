@@ -11,7 +11,7 @@
 ## ===========================================================
 source("Data_Init.R")
 pwfWL
-pwfLens
+pwfLens <- read.csv("data/pwfLens.csv")
 
 ## ===========================================================
 ## Lengths of all PWF in 2013

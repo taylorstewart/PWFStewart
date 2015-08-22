@@ -48,14 +48,14 @@ lm1 <- lm(logwt~logtl*sex,data=pwfWL)
 anova(lm1)
 compSlopes(lm1)
 fitPlot(lm1,legend="topleft")
-residPlot(lm1,student=TRUE)
+residPlot(lm1,resid.type="student")
 
 ## ===========================================================
 ## Fit the W-L SLR to get the overall coefficients
 ## ===========================================================
 lm2 <- lm(logwt~logtl,data=pwfWL)
 fitPlot(lm2)
-residPlot(lm2,student=TRUE)
+residPlot(lm2,resid.type="student")
 summary(lm2)
 (cf <- coef(lm2) )
 exp(cf[["(Intercept)"]])

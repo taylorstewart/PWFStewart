@@ -7,9 +7,17 @@
 ##############################################################
 ##############################################################
 ## ===========================================================
-## Source Data_Init Script ... get pwfLens and pwf data.frames
+## Source Data_Init.R script to get pwfWL data.frame used below
 ## ===========================================================
 source("Data_Init.R")
+
+## ===========================================================
+## Load pwfLens data.frame from CSV file.  This file was
+## created with the Create_LFdata.R script.  Run that script
+## again if the original length frequency data.frame was
+## changed.
+## ===========================================================
+pwfLens <- read.csv("data/pwfLens.csv")
 str(pwfLens)
 
 ## ===========================================================
@@ -22,7 +30,7 @@ source("zzzHelpers.R")
 ## Find characteristics of the Coaster samples in 2008.
 ## ===========================================================
 tmp <- filter(pwfLens,vessel=="Coaster",year==2008)
-xtabs(~OP_DATE,data=tmp)
+xtabs(~op_date,data=tmp)
 Summarize(~beg_depth,data=tmp)
 Summarize(~avg_depth,data=tmp)
 Summarize(~end_depth,data=tmp)
@@ -78,8 +86,7 @@ plot(h)
 ## ===========================================================
 yrs2 <- 2006:2013
 pwfLens06_13 <- pwfLens %>%
-  filter(year %in% yrs2) %>%
-  mutate(fyear=droplevels(fyear)) %>%
+  filterD(year %in% yrs2) %>%
   arrange(year,tl)
 str(pwfLens06_13)
 
