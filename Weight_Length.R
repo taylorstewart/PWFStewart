@@ -58,7 +58,7 @@ fitPlot(lm2)
 residPlot(lm2,resid.type="student")
 summary(lm2)
 (cf <- coef(lm2) )
-exp(cf[["(Intercept)"]])
+10^(cf[["(Intercept)"]])
 rSquared(lm2)
 
 ## -----------------------------------------------------------
