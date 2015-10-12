@@ -45,9 +45,10 @@ legend("topleft",legend=c("Female","Male","Unknown"),
 ## ===========================================================
 ## Cross-tabs of length category and age, separeately for each
 ##   sex (i.e., an age-length key if converted to percentages)
+## This is Table 2 in the manuscript.
 ## ===========================================================
-xtabs(~lcat+ageO+sex,data=Subset(pwfGrow,sex %in% c("Female","Male")))
-
+tmp <- xtabs(~lcat+ageO+sex,data=Subset(pwfGrow,sex %in% c("Female","Male")))
+print(tmp,zero.print="--")
 
 ## ===========================================================
 ## Handle small (<75-mm) unknown sexed fish by assigning an

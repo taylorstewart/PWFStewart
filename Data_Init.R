@@ -137,3 +137,10 @@ tmp <- rbind(dim(pwfWL),dim(pwfAgeS),
 tmp <- data.frame(paste0("pwf",c("WL","AgeS","AgeO","AgeSO","Growth")),tmp)
 colnames(tmp) <- c("data.frame","indivs","vars")
 tmp
+
+
+
+## ===========================================================
+## Remove data.frames that are not needed in other scripts.
+## ===========================================================
+rm(tmp)

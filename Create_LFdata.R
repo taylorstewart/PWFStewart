@@ -77,3 +77,9 @@ pwfLens <- pwfLF[reprows,] %>%
 ## Write out to a CSV file
 ## -----------------------------------------------------------
 write.csv(pwfLens,"data/pwfLens.csv",row.names=FALSE)
+
+
+## -----------------------------------------------------------
+## Clean objects from memory
+## -----------------------------------------------------------
+rm(pwfLens,pwfLF,reprows)
