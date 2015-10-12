@@ -25,7 +25,7 @@ This repository contains data files, analysis scripts, and the draft manuscript 
 * `Length_Freq.R` -- Length frequency analysis for last 8 years of data, including showing a break nearly every year at 75-mm and a break that is apparent in only one year near 50 mm.  This makes **Figure 3** in the manuscript (and a supplemental figure of length frequency histograms for 2000-2014).
 
 ## Age, Growth, and Size Analyses
-* `Age_Comparisons.R` -- Precision and bias analysis between readers of scales and otoliths, bias analysis between scales and otoliths.  This makes **Table 1** and the results in the **AGE** section of the manuscript.
+* `Age_Comparisons.R` -- Precision and bias analysis between readers of scales and otoliths, bias analysis between scales and otoliths.  This makes **Table 1**, **Figure 2**, and the results in the **AGE** section of the manuscript.
 * `Basic_Summaries.R` -- Basic summaries of length, weight, age, and sex variables.  These results are in the **SIZE** section of the manuscript.
 * `Growth.R` -- von Bertalanffy growth analyses.  This makes **Table 2**, **Table 3**, **Table 4**,  **Figure 4**, and the results in the **GROWTH** section of the manuscript.
 * `Weight-Length.R` -- Weight-length relationship analysis including comparing between sexes (F,M,U) and developing an overall W-L relationship.  These results are in the **WEIGHT-LENGTH RELATIONSHIP** section of the manuscript.
