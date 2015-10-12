@@ -1,5 +1,18 @@
 # Data files (so that they are not in a public repo)
-data/
+data/DHOAges/
+data/*.xlsx
+data/*.csv
+
+# Old files that don't need to be version controlled
+zzzOld/
+
+# temportary or old files related to the manuscript
+manuscript/.tmp
+manuscript/oldJFE
+manuscript/oldAMN
+
+# Files in the literature_resources
+literature_resources/Ogle Notes.docx
 
 # History files
 .Rhistory
@@ -11,8 +24,3 @@ data/
 # Preview of README.md
 README.html
 
-# Old files that don't need to be version controlled
-zzzOld/
-
-# temportary files related to the manuscript
-manuscript/.tmp
